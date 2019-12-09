@@ -15,7 +15,7 @@ const [, , ...args] = process.argv;
 
 if (!args.length) {
   (async () => {
-    await showBanner('Postwoman CLI', 'A CLI solution for Postwoman');
+    await showHelpInformation()
   })();
 } else if (args.length > 1 || !args[0].includes('-')) {
   showInvalidArgsInformation();
