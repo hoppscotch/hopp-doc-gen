@@ -1,9 +1,15 @@
 'use strict'
 
-// root command
-const scriptName = 'cli'
+const bannerInfo = require('node-banner')
 
-const showHelpInformation = () => {
+// root command
+const scriptName = 'postwoman-cli'
+
+const showBanner = async () => {
+  await bannerInfo('Postwoman CLI', 'A CLI solution for Postwoman')
+}
+
+const showHelpInformation = async () => {
   // Help text
   const helpInformation = ` Usage: $ ${scriptName} [options]
 
@@ -12,25 +18,35 @@ const showHelpInformation = () => {
         -V | --version: Shows up verison information
     `
   console.log()
+  await showBanner()
+  console.log()
   console.log(helpInformation)
 }
 
-const usageInfo = () => {
+const usageInfo = async () => {
+  await showBanner()
+  console.log()
   console.log(` See ${scriptName} --help for the list of available options.`)
 }
 
-const showInvalidArgsInformation = () => {
+const showInvalidArgsInformation = async () => {
+  await showBanner()
+  console.log()
   console.log(' Invalid arguments provided')
   console.log()
   usageInfo()
 }
 
-const showVersionInformation = () => {
+const showVersionInformation = async () => {
   const { version } = require('../../package.json')
+  await showBanner()
+  console.log()
   console.log(' ' + version)
 }
 
-const showUnknownOptionInformation = arg => {
+const showUnknownOptionInformation = async arg => {
+  await showBanner()
+  console.log()
   console.log(` Unknown option ${arg}`)
   console.log()
   usageInfo()
