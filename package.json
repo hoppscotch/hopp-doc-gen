@@ -1,0 +1,14 @@
+{
+  "name": "postwoman-cli",
+  "version": "0.0.1",
+  "description": "CLI solution for Postwoman.",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {},
+  "keywords": [
+    "cli",
+    "node.js",
+    "javascript"
+  ],
+  "author": "James George <jamesgeorge998001@gmail.com>"
+}
