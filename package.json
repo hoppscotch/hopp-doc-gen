@@ -17,6 +17,8 @@
     "node-banner": "^1.3.2"
   },
   "devDependencies": {
+    "ava": "^2.4.0",
+    "execa": "^3.4.0",
     "prettier-standard": "^16.1.0"
   }
 }
