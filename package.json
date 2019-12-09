@@ -13,5 +13,8 @@
   "author": "James George <jamesgeorge998001@gmail.com>",
   "dependencies": {
     "node-banner": "^1.3.2"
+  },
+  "devDependencies": {
+    "prettier-standard": "^16.1.0"
   }
 }
