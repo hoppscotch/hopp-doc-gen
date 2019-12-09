@@ -4,7 +4,9 @@
   "description": "CLI solution for Postwoman.",
   "main": "index.js",
   "bin": "index.js",
-  "scripts": {},
+  "scripts": {
+    "lint": "prettier-standard index.js src/**/*.js"
+  },
   "keywords": [
     "cli",
     "node.js",
