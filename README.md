@@ -17,4 +17,4 @@
 
 - Clone the repository.
 - Navigate to the directory and install dependencies with `npm install`.
-- Now fire in `npm link` which creates a symlink and `postwoman-cli` now can be accessed globally.
+- Now fire in `npm link` which creates a symlink and now `postwoman-cli` can be accessed globally.
