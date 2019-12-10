@@ -20,3 +20,13 @@ test('shows version with arg --version', async t => {
   const { stdout } = await execa(rootCommand, ['--version'])
   t.snapshot(stdout)
 })
+
+test('shows up help with arg -h', async t => {
+  const { stdout } = await execa(rootCommand, ['-h'])
+  t.snapshot(stdout)
+})
+
+test('shows up help with arg --help', async t => {
+  const { stdout } = await execa(rootCommand, ['--help'])
+  t.snapshot(stdout)
+})
