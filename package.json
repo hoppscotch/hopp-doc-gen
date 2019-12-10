@@ -14,7 +14,7 @@
     }
   },
   "lint-staged": {
-    "src/**/*.js": "npm run lint"
+    "src/{*,/**/*}.js": "npm run lint"
   },
   "keywords": [
     "cli",
