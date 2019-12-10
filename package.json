@@ -8,6 +8,14 @@
     "lint": "prettier-standard index.js test/index.js src/**/*.js",
     "test": "ava test/index.js"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.js": "npm run lint"
+  },
   "keywords": [
     "cli",
     "node.js",
