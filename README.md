@@ -13,7 +13,7 @@
 
 `postwoman-cli [options]`
 
-## Local Environment Setup
+## Instructions
 
 - Clone the repository.
 - Navigate to the directory and install dependencies with `npm install`.
