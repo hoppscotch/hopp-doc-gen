@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "CLI solution for Postwoman.",
   "main": "index.js",
-  "bin": "index.js",
+  "bin": {
+    "pw-cli": "index.js"
+  },
   "scripts": {
     "lint": "prettier-standard index.js test/index.js src/{*,/**/*}.js",
     "test": "ava test/index.js"
