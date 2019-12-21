@@ -2,8 +2,6 @@
 
 'use strict'
 
-const showBanner = require('node-banner')
-
 const {
   showHelpInformation,
   showVersionInformation,
