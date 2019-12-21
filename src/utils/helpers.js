@@ -6,7 +6,12 @@ const bannerInfo = require('node-banner')
 const scriptName = 'postwoman-cli'
 
 const showBanner = async () => {
-  await bannerInfo('Postwoman CLI', 'A CLI solution for Postwoman', 'green', 'white')
+  await bannerInfo(
+    'Postwoman CLI',
+    'A CLI solution for Postwoman',
+    'green',
+    'white'
+  )
   console.log('')
 }
 
