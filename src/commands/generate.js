@@ -63,12 +63,14 @@ const generateAPIDoc = async args => {
     item.requests.forEach(request => {
       idx++
       apiDoc[idx] = `### ${request.name}`
-      Object.keys(request).filter(key => key !== 'name').forEach(key => {
-        if (request[key]) {
-          idx++
-          apiDoc[idx] = `- ${key}: ${request[key]}`
-        }
-      })
+      Object.keys(request)
+        .filter(key => key !== 'name')
+        .forEach(key => {
+          if (request[key]) {
+            idx++
+            apiDoc[idx] = `- ${key}: ${request[key]}`
+          }
+        })
       idx++
       apiDoc[idx] = '---'
     })
