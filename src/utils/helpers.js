@@ -1,6 +1,7 @@
 'use strict'
 
 const bannerInfo = require('node-banner')
+const kleur = require('kleur')
 
 // root command
 const scriptName = 'postwoman-cli'
@@ -17,7 +18,10 @@ const showBanner = async () => {
 
 const showHelpInformation = async () => {
   // Help text
-  const helpInformation = ` Usage: $ ${scriptName} [options]
+  const helpInformation = ` Usage: $ ${scriptName} <command> [options]
+
+        Commands
+        generate [path]: Generates API Documentation
 
         Options
         -h | --help: Shows up help information
@@ -32,15 +36,7 @@ const showHelpInformation = async () => {
 const usageInfo = async () => {
   await showBanner()
   console.log()
-  console.log(` See ${scriptName} --help for the list of available options.`)
-}
-
-const showInvalidArgsInformation = async () => {
-  await showBanner()
-  console.log()
-  console.log(' Invalid arguments provided')
-  console.log()
-  usageInfo()
+  console.log(` See ${scriptName} --help for the list for more information.`)
 }
 
 const showVersionInformation = async () => {
@@ -58,9 +54,14 @@ const showUnknownOptionInformation = async arg => {
   usageInfo()
 }
 
+const logError = (msg) => {
+  console.error(kleur.red(msg))
+  process.exit(1)
+};
+
 module.exports = {
   showHelpInformation,
-  showInvalidArgsInformation,
   showVersionInformation,
-  showUnknownOptionInformation
+  showUnknownOptionInformation,
+  logError
 }
