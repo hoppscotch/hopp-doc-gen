@@ -5,7 +5,7 @@
 const {
   showHelpInformation,
   showVersionInformation,
-  showUnknownOptionInformation,
+  showUnknownOptionInformation
 } = require('./utils/helpers')
 
 const generateAPIDoc = require('./commands/generate')
