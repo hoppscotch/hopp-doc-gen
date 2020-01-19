@@ -54,10 +54,10 @@ const showUnknownOptionInformation = async arg => {
   usageInfo()
 }
 
-const logError = (msg) => {
+const logError = msg => {
   console.error(kleur.red(msg))
   process.exit(1)
-};
+}
 
 module.exports = {
   showHelpInformation,
