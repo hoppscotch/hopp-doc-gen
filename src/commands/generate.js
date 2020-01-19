@@ -33,8 +33,6 @@ const generateAPIDoc = async args => {
 
   const data = JSON.parse(readFileSync(args[1]))
 
-  execa.commandSync('mkdir docs')
-
   const spinner = ora('Installing dependencies').start()
   try {
     await execa('npm', ['install', '--save-dev', 'vuepress'])
@@ -49,7 +47,9 @@ const generateAPIDoc = async args => {
 
   writeFileSync('package.json', JSON.stringify(pkg, null, 2))
 
-  writeFileSync('docs/README.md', '## API Documentation')
+  execa.commandSync('mkdir docs')
+
+  writeFileSync('docs/README.md', '# API Documentation')
 
   const apiDoc = readFileSync('docs/README.md')
     .toString()
@@ -59,15 +59,25 @@ const generateAPIDoc = async args => {
 
   data.forEach(item => {
     idx++
-    apiDoc[idx] = `### Collection: ${item.name}`
+    apiDoc[idx] = `## ${item.name}`
     item.requests.forEach(request => {
-      Object.keys(request).forEach(key => {
+      idx++
+      apiDoc[idx] = `### ${request.name}`
+      Object.keys(request).filter(key => key !== 'name').forEach(key => {
         if (request[key]) {
           idx++
           apiDoc[idx] = `- ${key}: ${request[key]}`
         }
       })
+      idx++
+      apiDoc[idx] = '---'
     })
+    idx++
+    apiDoc[idx] = ''
+    idx++
+    apiDoc[idx] = '<br/>'
+    idx++
+    apiDoc[idx] = ''
   })
 
   writeFileSync('docs/README.md', apiDoc.join('\n'))
