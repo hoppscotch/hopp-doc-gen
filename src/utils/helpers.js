@@ -59,9 +59,14 @@ const logError = msg => {
   process.exit(1)
 }
 
+const logInfo = msg => {
+  console.info(kleur.cyan(msg))
+}
+
 module.exports = {
   showHelpInformation,
   showVersionInformation,
   showUnknownOptionInformation,
-  logError
+  logError,
+  logInfo
 }
