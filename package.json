@@ -26,7 +26,9 @@
   ],
   "author": "James George <jamesgeorge998001@gmail.com>",
   "dependencies": {
-    "node-banner": "^1.4.0"
+    "kleur": "^3.0.3",
+    "node-banner": "^1.4.0",
+    "ora": "^4.0.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
