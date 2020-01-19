@@ -20,7 +20,9 @@ const generateAPIDoc = async args => {
   }
 
   if (existsSync('doc')) {
-    logError('\n There is already a doc directory present within the current path')
+    logError(
+      '\n There is already a doc directory present within the current path'
+    )
   }
 
   const pkg = require(`${process.cwd()}/package.json`)
@@ -49,7 +51,9 @@ const generateAPIDoc = async args => {
 
   writeFileSync('docs/README.md', '## API Documentation')
 
-  const apiDoc = readFileSync('docs/README.md').toString().split('\n')
+  const apiDoc = readFileSync('docs/README.md')
+    .toString()
+    .split('\n')
 
   let idx = 1
 
