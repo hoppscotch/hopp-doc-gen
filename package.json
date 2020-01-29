@@ -26,6 +26,7 @@
   ],
   "author": "James George <jamesgeorge998001@gmail.com>",
   "dependencies": {
+    "commander": "^4.1.0",
     "kleur": "^3.0.3",
     "node-banner": "^1.4.0",
     "ora": "^4.0.3"
