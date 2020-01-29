@@ -12,6 +12,12 @@ program
   .version(version)
   .usage('<command> [options]')
 
+program
+  .command('generate')
+  .action(generateAPIDoc)
+
+program.parse(process.argv)
+
 if (!program._args.length) {
   program.outputHelp()
   process.exit(1)
