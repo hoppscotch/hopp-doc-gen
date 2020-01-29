@@ -2,9 +2,11 @@ const execa = require('execa')
 const { existsSync, readFileSync, writeFileSync } = require('fs')
 const ora = require('ora')
 
-const { logError, logInfo } = require('../utils/helpers')
+const { logError, logInfo, showBanner } = require('../utils/helpers')
 
 const generateAPIDoc = async args => {
+  await showBanner()
+
   if (!args[1]) {
     logError('\n Please specify the path to postwoman-collections.json')
   }
