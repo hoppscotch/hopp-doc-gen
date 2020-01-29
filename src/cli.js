@@ -16,7 +16,7 @@ program.command('generate').action(generateAPIDoc)
 
 program.parse(process.argv)
 
-if (!program._args.length) {
+if (program.rawArgs.length < 3) {
   program.outputHelp()
   process.exit(1)
 }
