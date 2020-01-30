@@ -12,7 +12,10 @@ program
   .version(version)
   .usage('<command> [options]')
 
-program.command('generate').action(generateAPIDoc)
+program
+  .command('generate')
+  .description('Generate API Documentation')
+  .action(generateAPIDoc)
 
 program.parse(process.argv)
 
