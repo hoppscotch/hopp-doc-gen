@@ -13,7 +13,7 @@ program
   .usage('<command> [options]')
 
 program
-  .command('generate')
+  .command('generate <path>')
   .description('Generate API Documentation')
   .action(generateAPIDoc)
 

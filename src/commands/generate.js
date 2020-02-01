@@ -4,14 +4,14 @@ const ora = require('ora')
 
 const { logError, logInfo, showBanner } = require('../utils/helpers')
 
-const generateAPIDoc = async args => {
+const generateAPIDoc = async path => {
   await showBanner()
 
-  if (!args[1]) {
+  if (!path) {
     logError('\n Please specify the path to postwoman-collections.json')
   }
 
-  if (!existsSync(args[1])) {
+  if (!existsSync(path)) {
     logError(
       '\n Make sure that postwoman-collections.json exists within the given path'
     )
@@ -33,7 +33,7 @@ const generateAPIDoc = async args => {
     logError('docs directory already exists within the current path')
   }
 
-  const data = JSON.parse(readFileSync(args[1]))
+  const data = JSON.parse(readFileSync(path))
 
   const spinner = ora('Installing dependencies').start()
   try {
