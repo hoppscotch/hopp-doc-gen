@@ -30,6 +30,7 @@
   "author": "James George <jamesgeorge998001@gmail.com>",
   "dependencies": {
     "commander": "^4.1.0",
+    "execa": "^4.0.0",
     "kleur": "^3.0.3",
     "node-banner": "^1.4.0",
     "ora": "^4.0.3"
@@ -38,7 +39,6 @@
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
     "ava": "^2.4.0",
-    "execa": "^3.4.0",
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
     "prettier-standard": "^16.1.0"
