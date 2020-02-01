@@ -11,7 +11,7 @@
 
 ## Usage
 
-`postwoman-cli [options]`
+`pw-cli <command> [options]`
 
 ## Instructions
 
