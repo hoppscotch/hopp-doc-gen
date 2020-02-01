@@ -12,6 +12,13 @@
 ## Usage
 
 `pw-cli <command> [options]`
+ 
+## Generate API Doc
+
+`pw-cli generate <path>`
+
+`path` - path to `postwoman-collections.json` exported from [postwoman.io](https://postwoman.io/)
+
 
 ## Instructions
 
