@@ -7,13 +7,9 @@ const { logError, logInfo, showBanner } = require('../utils/helpers')
 const generateAPIDoc = async path => {
   await showBanner()
 
-  if (!path) {
-    logError('\n Please specify the path to postwoman-collections.json')
-  }
-
   if (!existsSync(path)) {
     logError(
-      '\n Make sure that postwoman-collections.json exists within the given path'
+      '\n Make sure that postwoman-collection.json exists within the given path'
     )
   }
 
