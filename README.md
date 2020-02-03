@@ -17,7 +17,7 @@
 
 `pw-cli generate <path>`
 
-`path` - path to `postwoman-collections.json` exported from [postwoman.io](https://postwoman.io/)
+`path` - path to `postwoman-collection.json` exported from [postwoman.io](https://postwoman.io/)
 
 
 ## Instructions
