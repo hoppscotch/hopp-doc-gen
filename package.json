@@ -41,6 +41,6 @@
     "ava": "^2.4.0",
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
-    "prettier-standard": "^16.1.0"
+    "prettier-standard": "^16.3.0"
   }
 }
