@@ -1,9 +1,9 @@
 <div align="center">
-  <a href="https://postwoman.io"><img src="https://postwoman.io/icons/logo.svg" alt="Postwoman" height="128"></a>
+  <a href="https://hoppscotch.io"><img src="https://hoppscotch.io/icon.png" alt="Hoppscotch" height="128"></a>
   <br>
-  <h1>Postwoman CLI</h1>
+  <h1>Hopp Doc Gen</h1>
   <p>
-    A CLI solution for Postwoman.
+    An API documentation generator CLI by https://hoppscotch.io
   </p>
 </div>
 
@@ -11,20 +11,20 @@
 
 ## Usage
 
-`pw-cli <command> [options]`
- 
+`hdg <command> [options]`
+
 ## Generate API Doc
 
-`pw-cli generate <path>`
+`hdg generate <path>`
 
-`path` - path to `postwoman-collection.json` exported from [postwoman.io](https://postwoman.io/)
+`path` - path to `hoppscotch-collection.json` exported from [hoppscotch.io](https://hoppscotch.io/)
 
 
 ## Instructions
 
 - Clone the repository.
 - Navigate to the directory and install dependencies with `npm install`.
-- Now fire in `npm link` which creates a symlink and now `postwoman-cli` can be accessed globally.
+- Now fire in `npm link` which creates a symlink and now `hdg` can be accessed globally.
 
 ## Status
 
