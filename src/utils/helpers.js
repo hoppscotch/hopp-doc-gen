@@ -3,15 +3,8 @@
 const bannerInfo = require('node-banner')
 const kleur = require('kleur')
 
-const showBanner = async () => {
-  await bannerInfo(
-    'Postwoman CLI',
-    'A CLI solution for Postwoman',
-    'green',
-    'white'
-  )
-  console.log('')
-}
+const showBanner = () =>
+  bannerInfo('Hopp Doc Gen', 'An API Doc Generator CLI', 'green', 'white')
 
 const logError = msg => {
   console.error(kleur.red(msg))

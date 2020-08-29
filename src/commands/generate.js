@@ -1,35 +1,34 @@
 const execa = require('execa')
-const { existsSync, readFileSync, writeFileSync } = require('fs')
+const { existsSync, mkdirSync, readFileSync, writeFileSync } = require('fs')
 const ora = require('ora')
+const { resolve } = require('path')
 
 const { logError, logInfo, showBanner } = require('../utils/helpers')
 
-const generateAPIDoc = async path => {
+const generateAPIDoc = async filePath => {
   await showBanner()
 
-  if (!existsSync(path)) {
+  const absFilePath = resolve(filePath)
+
+  if (!existsSync(absFilePath)) {
     logError(
-      '\n Make sure that postwoman-collection.json exists within the given path'
+      ` Make sure that hoppscotch-collection.json exists in ${process.cwd()}`
     )
   }
 
-  if (!existsSync('package.json')) {
-    logError('\n package.json not found!')
+  const pkgJsonPath = resolve('package.json')
+  if (!existsSync(pkgJsonPath)) {
+    logError(` package.json was not found in ${process.cwd()}!`)
   }
 
-  if (existsSync('doc')) {
-    logError(
-      '\n There is already a doc directory present within the current path'
-    )
+  const pkg = require(pkgJsonPath)
+
+  const docsDirPath = resolve('docs')
+  if (existsSync(docsDirPath)) {
+    logError(` docs directory already exists in ${process.cwd()}`)
   }
 
-  const pkg = require(`${process.cwd()}/package.json`)
-
-  if (existsSync('docs')) {
-    logError('docs directory already exists within the current path')
-  }
-
-  const data = JSON.parse(readFileSync(path))
+  const data = JSON.parse(readFileSync(absFilePath))
 
   const spinner = ora('Installing dependencies').start()
   try {
@@ -43,13 +42,14 @@ const generateAPIDoc = async path => {
   pkg.scripts['docs:build'] = 'vuepress build docs'
   pkg.scripts['docs:dev'] = 'vuepress dev docs'
 
-  writeFileSync('package.json', JSON.stringify(pkg, null, 2))
+  writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, 2))
 
-  execa.commandSync('mkdir docs')
+  mkdirSync(docsDirPath)
 
-  writeFileSync('docs/README.md', '# API Documentation')
+  const readmePath = resolve('docs', 'README.md')
+  writeFileSync(readmePath, '# API Documentation')
 
-  const apiDoc = readFileSync('docs/README.md')
+  const apiDoc = readFileSync(readmePath)
     .toString()
     .split('\n')
 
@@ -80,9 +80,9 @@ const generateAPIDoc = async path => {
     apiDoc[idx] = ''
   })
 
-  writeFileSync('docs/README.md', apiDoc.join('\n'))
+  writeFileSync(readmePath, apiDoc.join('\n'))
 
-  logInfo('\n All set. Please run npm run docs:dev from the root directory')
+  logInfo('\n All set. Please run npm run docs:dev')
 }
 
 module.exports = generateAPIDoc

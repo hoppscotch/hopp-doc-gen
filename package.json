@@ -3,9 +3,7 @@
   "version": "1.0.0-beta.8",
   "description": "An API documentation generator CLI",
   "main": "index.js",
-  "bin": {
-    "pw-cli": "index.js"
-  },
+  "bin": "index.js",
   "scripts": {
     "lint": "prettier-standard index.js test/index.js src/{*,/**/*}.js",
     "test": "ava test/index.js"
