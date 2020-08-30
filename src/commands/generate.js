@@ -56,66 +56,111 @@ const generateAPIDoc = async filePath => {
   let idx = 1
 
   /**
-   * Template for the docs/README.md for the json parser
+   * Helper methods to apply proper syntax highlighting
    */
-  const tp = {
+  const utils = {
     /**
-     * Check if a json value is empty
-     * @param { JSON } ct The hdg spec-collection.json value
+     * Check if an entry is empty
+     * @param {Object} content The respective content
+     * @return {Boolean}
      */
-    isEmpty: ct => ct.length === 0 || Object.keys(ct).length === 0,
+    isEmpty: content =>
+      content.length === 0 || Object.keys(content).length === 0,
     /**
-     * Return a prettier string for json values
-     * @param { String } key The hdg spec-collection.json key
-     * @param { String } ct The hdg spec-collection.json value
+     * Adds syntax highlighting to JSON codeblock
+     * @param {String} key The hoppscotch-collection.json key
+     * @param {String} content The codeblock
+     * @returns {String}
      */
-    prettyJson: (key, ct) => {
+    prettifyJSON: (key, content) => {
       return (
-        ` - ${key}:` + '\n```json\n' + JSON.stringify(ct, null, 2) + '\n```'
+        ` - ${key}:` +
+        '\n```json\n' +
+        JSON.stringify(content, null, 2) +
+        '\n```'
       )
     },
     /**
-     * Return a prettier string for javascript values
-     * @param { String } key The hdg spec-collection.json key
-     * @param { String } ct The hdg spec-collection.json value
+     * Adds syntax highlighting to JS codeblock
+     * @param {String} key The hoppscotch-collection.json key
+     * @param {String} content The codeblock
+     * @returns {String}
      */
-    prettyJs: (key, ct) => ` - ${key}:` + '\n```javascript\n' + ct + '\n```',
-    url: (key, ct) => ` - ${key}: ${ct}`,
-    path: (key, ct) => ` - ${key}: ${ct}`,
-    method: (key, ct) => ` - ${key}: ${ct}`,
-    auth: (key, ct) => (ct === 'None' ? '' : ` - ${key}: ${ct}`),
-    httpUser: (key, ct) => ` - ${key}: ${ct}`,
-    httpPassword: (key, ct) => ` - ${key}: ${ct}`,
-    passwordFieldType: (key, ct) => ` - ${key}: ${ct}`,
-    bearerToken: (key, ct) => ` - ${key}: ${ct}`,
-    contentType: (key, ct) => ` - ${key}: ${ct}`,
-    requestType: (key, ct) => ` - ${key}: ${ct}`,
-    rawParams: (key, ct) => {
-      const parsed = JSON.parse(ct)
-      return tp.isEmpty(parsed) ? '' : tp.prettyJson(key, parsed)
+    prettifyJs: (key, content) =>
+      ` - ${key}:` + '\n```javascript\n' + content + '\n```',
+    /**
+     * Adds syntax highlighting to JSON codeblock
+     * @param {String} key The hoppscotch-collection.json key
+     * @param {String} content The codeblock
+     * @returns {String}
+     */
+    prettifyJSONWithCheck: (key, content) =>
+      utils.isEmpty(content) ? '' : utils.prettifyJSON(key, content),
+    /**
+     * Adds syntax highlighting to raw-params
+     * @param {String} key The hoppscotch-collection.json key
+     * @param {String} content The codeblock
+     * @returns {String}
+     */
+    rawParams: (key, content) => {
+      const parsed = JSON.parse(content)
+      return utils.isEmpty(parsed) ? '' : utils.prettifyJSON(key, parsed)
     },
-    headers: (key, ct) => (tp.isEmpty(ct) ? '' : tp.prettyJson(key, ct)),
-    params: (key, ct) => (tp.isEmpty(ct) ? '' : tp.prettyJson(key, ct)),
-    bodyParams: (key, ct) => (tp.isEmpty(ct) ? '' : tp.prettyJson(key, ct)),
-    preRequestScript: (key, ct) => tp.prettyJs(key, ct),
-    testScript: (key, ct) => tp.prettyJs(key, ct)
+    /**
+     * Format text content
+     * @param {String} key The hoppscotch-collection.json key
+     * @param {String} content The content
+     * @returns {String}
+     */
+    formatKey: (key, content) => ` - ${key}: ${content}`,
+    auth: (key, content) =>
+      content === 'None' ? '' : utils.formatKey(key, content),
+    headers: (key, content) => utils.prettifyJSONWithCheck(key, content),
+    params: (key, content) => utils.prettifyJSONWithCheck(key, content),
+    bodyParams: (key, content) => utils.prettifyJSONWithCheck(key, content),
+    preRequestScript: (key, content) => utils.prettifyJs(key, content),
+    testScript: (key, content) => utils.prettifyJs(key, content)
   }
 
-  data.forEach(item => {
+  const validKeys = [
+    'url',
+    'path',
+    'method',
+    'httpUser',
+    'httpPassword',
+    'passwordFieldType',
+    'bearerToken',
+    'contentType',
+    'requestType',
+    'rawParams',
+    'headers',
+    'params',
+    'bodyParams',
+    'preRequestScript',
+    'testScript'
+  ]
+
+  // keys with text content
+  const textualKeys = validKeys.slice(0, 9)
+
+  data.forEach(collection => {
     idx++
-    apiDoc[idx] = `## ${item.name}`
-    item.requests.forEach(request => {
+    apiDoc[idx] = `## ${collection.name}`
+    collection.requests.forEach(request => {
       idx++
       apiDoc[idx] = `### ${request.name}`
       Object.keys(request)
-        .filter(key => tp[key] && request[key])
+        .filter(key => request[key] && validKeys.includes(key)) // Filter out valid keys
         .forEach(key => {
           try {
             idx++
-            apiDoc[idx] = tp[key](key, request[key])
+            console.log(textualKeys.includes(key) + key)
+            apiDoc[idx] = textualKeys.includes(key)
+              ? utils.formatKey(key, request[key])
+              : utils[key](key, request[key]) // Invoke the corresponding helper
           } catch (err) {
             logError(
-              `\n Check key: ${key}. Make sure that postwoman-collection.json schema is correct`
+              `\n Check key: ${key}. Make sure that hoppscotch-collection.json schema is valid`
             )
           }
         })
