@@ -12,7 +12,7 @@ const generateAPIDoc = async filePath => {
 
   if (!existsSync(absFilePath)) {
     logError(
-      ` Make sure that hoppscotch-collection.json exists in ${process.cwd()}`
+      ` Make sure that hoppscotch-collection.json exist in ${process.cwd()}`
     )
   }
 
@@ -26,7 +26,7 @@ const generateAPIDoc = async filePath => {
 
   const docsDirPath = resolve('docs')
   if (existsSync(docsDirPath)) {
-    logError(` docs directory already exists in ${process.cwd()}`)
+    logError(` docs directory already exist in ${process.cwd()}`)
   }
 
   const data = JSON.parse(readFileSync(absFilePath))
