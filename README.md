@@ -19,7 +19,6 @@
 
 `path` - path to `hoppscotch-collection.json` exported from [hoppscotch.io](https://hoppscotch.io/)
 
-
 ## Instructions
 
 - Clone the repository.

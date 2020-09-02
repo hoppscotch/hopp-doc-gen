@@ -6,6 +6,8 @@
   "bin": "index.js",
   "scripts": {
     "lint": "prettier-standard index.js test/index.js src/{*,/**/*}.js",
+    "lint:check": "prettier-standard index.js test/index.js src/{*,/**/*}.js --check",
+    "pretest": "npm run lint:check",
     "test": "ava test/cli.test.js test/commands/*.test.js"
   },
   "husky": {
