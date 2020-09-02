@@ -18,7 +18,8 @@ const generateAPIDoc = async filePath => {
 
   const pkgJsonPath = resolve('package.json')
   if (!existsSync(pkgJsonPath)) {
-    logError(` package.json was not found in ${process.cwd()}!`)
+    // Create package.json if it doesn't exist
+    execa.sync('npm', ['init', '-y'])
   }
 
   const pkg = require(pkgJsonPath)
