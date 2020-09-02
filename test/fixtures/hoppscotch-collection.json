@@ -1,0 +1,43 @@
+[
+  {
+    "name": "My Collection",
+    "folders": [],
+    "requests": [
+      {
+        "url": "https://httpbin.org",
+        "path": "/post",
+        "method": "POST",
+        "auth": "None",
+        "httpUser": "",
+        "httpPassword": "",
+        "passwordFieldType": "password",
+        "bearerToken": "",
+        "headers": [
+          {
+            "key": "Authorization",
+            "value": "YWxhZGRpbjpvcGVuc2VzYW1l"
+          },
+          {
+            "key": "cache-Control",
+            "value": "max-age=604800"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ],
+        "params": [],
+        "bodyParams": [],
+        "rawParams": "{\n  \"email\": \"test@xyz.com\",\n  \"password\": 123456\n}",
+        "rawInput": true,
+        "contentType": "application/json",
+        "requestType": "",
+        "preRequestScript": "pw.env.set('variable', 'value');",
+        "testScript": "pw.expect('variable').toBe('value');",
+        "label": "",
+        "name": "My Request",
+        "collection": 0
+      }
+    ]
+  }
+]
