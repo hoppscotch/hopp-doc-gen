@@ -30,17 +30,17 @@
   "author": "James George <jamesgeorge998001@gmail.com>",
   "dependencies": {
     "commander": "^6.1.0",
-    "execa": "^4.0.0",
+    "execa": "^4.0.3",
     "kleur": "^3.0.3",
     "node-banner": "^1.4.0",
-    "ora": "^4.0.3"
+    "ora": "^4.1.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.2.0",
-    "@commitlint/config-conventional": "^8.2.0",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
     "ava": "^2.4.0",
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
-    "prettier-standard": "^16.3.0"
+    "prettier-standard": "^16.4.1"
   }
 }
