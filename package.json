@@ -31,6 +31,7 @@
   "dependencies": {
     "commander": "^6.1.0",
     "execa": "^4.0.3",
+    "inquirer": "^7.3.3",
     "kleur": "^3.0.3",
     "node-banner": "^1.4.0",
     "ora": "^4.1.1"

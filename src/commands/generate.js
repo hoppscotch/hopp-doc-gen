@@ -1,6 +1,13 @@
 const execa = require('execa')
-const { existsSync, mkdirSync, readFileSync, writeFileSync } = require('fs')
+const {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  rmdirSync
+} = require('fs')
 const ora = require('ora')
+const { prompt } = require('inquirer')
 const { resolve } = require('path')
 
 const { logError, logInfo, showBanner } = require('../utils/helpers')
@@ -25,8 +32,20 @@ const generateAPIDoc = async filePath => {
   const pkg = require(pkgJsonPath)
 
   const docsDirPath = resolve('docs')
-  if (existsSync(docsDirPath)) {
-    logError(` docs directory already exist in ${process.cwd()}`)
+  const docsDirPathExist = existsSync(docsDirPath)
+
+  if (docsDirPathExist) {
+    const { overwriteDocs } = await prompt({
+      name: 'overwriteDocs',
+      type: 'confirm',
+      message: ` A docs directory already exist in ${process.cwd()}, would you like to overwrite it?`,
+      default: false
+    })
+    overwriteDocs
+      ? rmdirSync(docsDirPath, { recursive: true })
+      : logError(
+          ' Process canceled. Check the options for the hdg generate command'
+        )
   }
 
   const data = JSON.parse(readFileSync(absFilePath))
