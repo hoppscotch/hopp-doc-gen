@@ -46,9 +46,9 @@ test('generates API Doc', t => {
 })
 
 test('shows an appropriate warning if docs directory already exist in path', t => {
-  const { stderr } = run(['generate', configFilePath], {
+  const { stdout } = run(['generate', configFilePath], {
     cwd: genPath,
     reject: false
   })
-  t.true(stderr.includes('docs directory already exist'))
+  t.true(stdout.includes('A docs directory already exist'))
 })
