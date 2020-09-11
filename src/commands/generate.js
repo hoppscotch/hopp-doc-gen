@@ -12,7 +12,7 @@ const { resolve } = require('path')
 
 const { logError, logInfo, showBanner } = require('../utils/helpers')
 
-const generateAPIDoc = async filePath => {
+const generateAPIDoc = async (filePath, { install }) => {
   await showBanner()
 
   const absFilePath = resolve(filePath)
@@ -24,7 +24,7 @@ const generateAPIDoc = async filePath => {
   }
 
   const pkgJsonPath = resolve('package.json')
-  if (!existsSync(pkgJsonPath)) {
+  if (!existsSync(pkgJsonPath) && install) {
     // Create package.json if it doesn't exist
     execa.sync('npm', ['init', '-y'])
   }
@@ -50,19 +50,21 @@ const generateAPIDoc = async filePath => {
 
   const data = JSON.parse(readFileSync(absFilePath))
 
-  const spinner = ora('Installing dependencies').start()
-  try {
-    await execa('npm', ['install', '--save-dev', 'vuepress'])
-  } catch (err) {
-    spinner.fail('something went wrong')
-    throw err
+  if (install) {
+    const spinner = ora('Installing dependencies').start()
+    try {
+      await execa('npm', ['install', '--save-dev', 'vuepress'])
+    } catch (err) {
+      spinner.fail('something went wrong')
+      throw err
+    }
+    spinner.stop()
+
+    pkg.scripts['docs:build'] = 'vuepress build docs'
+    pkg.scripts['docs:dev'] = 'vuepress dev docs'
+
+    writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, 2))
   }
-  spinner.stop()
-
-  pkg.scripts['docs:build'] = 'vuepress build docs'
-  pkg.scripts['docs:dev'] = 'vuepress dev docs'
-
-  writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, 2))
 
   mkdirSync(docsDirPath)
 
@@ -196,6 +198,18 @@ const generateAPIDoc = async filePath => {
   })
 
   writeFileSync(readmePath, apiDoc.join('\n'))
+
+  /**
+   * Helper methods to apply proper success messages
+   */
+  const messages = {
+    'no-install': '\n All set. Your doc is ready'
+  }
+
+  if (!install) {
+    logInfo(messages['no-install'])
+    return
+  }
 
   logInfo('\n All set. Please run npm run docs:dev')
 }

@@ -15,7 +15,11 @@ program
 program
   .command('generate <path>')
   .description('Generate API Documentation')
-  .action(generateAPIDoc)
+  .option(
+    '-n, --no-install',
+    'skip npm install and create only the markdown file'
+  )
+  .action((path, { install }) => generateAPIDoc(path, { install }))
 
 program.parse(process.argv)
 
