@@ -19,7 +19,14 @@ program
     '-n, --no-install',
     'skip npm install and create only the markdown file'
   )
-  .action((path, { install }) => generateAPIDoc(path, { install }))
+  .option(
+    '-o, --output-path <type>',
+    'the documentation markdown file output path',
+    'docs'
+  )
+  .action((path, { install, outputPath }) =>
+    generateAPIDoc(path, { install, outputPath })
+  )
 
 program.parse(process.argv)
 

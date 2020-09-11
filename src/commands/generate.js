@@ -12,7 +12,7 @@ const { resolve } = require('path')
 
 const { logError, logInfo, showBanner } = require('../utils/helpers')
 
-const generateAPIDoc = async (filePath, { install }) => {
+const generateAPIDoc = async (filePath, { install, outputPath }) => {
   await showBanner()
 
   const absFilePath = resolve(filePath)
@@ -24,14 +24,14 @@ const generateAPIDoc = async (filePath, { install }) => {
   }
 
   const pkgJsonPath = resolve('package.json')
-  if (!existsSync(pkgJsonPath) && install) {
+  if (!existsSync(pkgJsonPath)) {
     // Create package.json if it doesn't exist
     execa.sync('npm', ['init', '-y'])
   }
 
   const pkg = require(pkgJsonPath)
 
-  const docsDirPath = resolve('docs')
+  const docsDirPath = resolve(outputPath)
   const docsDirPathExist = existsSync(docsDirPath)
 
   if (docsDirPathExist) {
@@ -68,7 +68,7 @@ const generateAPIDoc = async (filePath, { install }) => {
 
   mkdirSync(docsDirPath)
 
-  const readmePath = resolve('docs', 'README.md')
+  const readmePath = resolve(outputPath, 'README.md')
   writeFileSync(readmePath, '# API Documentation')
 
   const apiDoc = readFileSync(readmePath)
@@ -199,15 +199,8 @@ const generateAPIDoc = async (filePath, { install }) => {
 
   writeFileSync(readmePath, apiDoc.join('\n'))
 
-  /**
-   * Helper methods to apply proper success messages
-   */
-  const messages = {
-    'no-install': '\n All set. Your doc is ready'
-  }
-
   if (!install) {
-    logInfo(messages['no-install'])
+    logInfo('\n All set. Your doc is ready')
     return
   }
 
