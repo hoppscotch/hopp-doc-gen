@@ -7,7 +7,7 @@ const {
   rmdirSync
 } = require('fs')
 const ora = require('ora')
-const { prompt } = require('inquirer')
+const { prompt } = require('enquirer')
 const { resolve } = require('path')
 
 const { logError, logInfo, showBanner } = require('../utils/helpers')
@@ -38,8 +38,7 @@ const generateAPIDoc = async (filePath, { install, outputPath }) => {
     const { overwriteDocs } = await prompt({
       name: 'overwriteDocs',
       type: 'confirm',
-      message: ` A docs directory already exist in ${process.cwd()}, would you like to overwrite it?`,
-      default: false
+      message: ` A docs directory already exist in ${process.cwd()}, would you like to overwrite it?`
     })
     overwriteDocs
       ? rmdirSync(docsDirPath, { recursive: true })
