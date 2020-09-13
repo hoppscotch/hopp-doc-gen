@@ -16,21 +16,10 @@ program
   .command('generate <path>')
   .description('Generate API Documentation')
   .option(
-    '-n, --no-install',
-    'skip npm install and create only the markdown file'
+    '-s, --skip-install',
+    'skip installation of vuepress and just create the markdown file'
   )
-  .option(
-    '-o, --output-path <type>',
-    'the documentation markdown file output path',
-    'docs'
-  )
-  .action((path, { install, outputPath }) =>
-    generateAPIDoc(path, { install, outputPath })
-  )
+  .option('-o, --output-path <path>', 'specify an output path', 'docs')
+  .action(generateAPIDoc)
 
 program.parse(process.argv)
-
-if (program.rawArgs.length < 3) {
-  program.outputHelp()
-  process.exit(1)
-}

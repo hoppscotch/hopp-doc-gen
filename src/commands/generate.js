@@ -8,18 +8,26 @@ const {
 } = require('fs')
 const ora = require('ora')
 const { prompt } = require('enquirer')
-const { resolve } = require('path')
+const { basename, resolve } = require('path')
 
-const { logError, logInfo, showBanner } = require('../utils/helpers')
+const {
+  logError,
+  logInfo,
+  logSuccess,
+  showBanner
+} = require('../utils/helpers')
 
-const generateAPIDoc = async (filePath, { install, outputPath }) => {
+const generateAPIDoc = async (filePath, opts) => {
   await showBanner()
+
+  // optional flags for generate command
+  const { skipInstall, outputPath } = opts
 
   const absFilePath = resolve(filePath)
 
   if (!existsSync(absFilePath)) {
     logError(
-      ` Make sure that hoppscotch-collection.json exist in ${process.cwd()}`
+      `\n Make sure that hoppscotch-collection.json exist in ${process.cwd()}`
     )
   }
 
@@ -30,27 +38,25 @@ const generateAPIDoc = async (filePath, { install, outputPath }) => {
   }
 
   const pkg = require(pkgJsonPath)
-
   const docsDirPath = resolve(outputPath)
-  const docsDirPathExist = existsSync(docsDirPath)
 
-  if (docsDirPathExist) {
+  if (existsSync(docsDirPath)) {
     const { overwriteDocs } = await prompt({
       name: 'overwriteDocs',
       type: 'confirm',
-      message: ` A docs directory already exist in ${process.cwd()}, would you like to overwrite it?`
+      message: ` A ${basename(
+        docsDirPath
+      )} directory already exist in ${process.cwd()}, would you like to overwrite it?`
     })
     overwriteDocs
       ? rmdirSync(docsDirPath, { recursive: true })
-      : logError(
-          ' Process canceled. Check the options for the hdg generate command'
-        )
+      : logInfo(' Run hdg generate --help to see the available options.')
   }
 
   const data = JSON.parse(readFileSync(absFilePath))
 
-  if (install) {
-    const spinner = ora('Installing dependencies').start()
+  if (!skipInstall) {
+    const spinner = ora('Installing vuepress').start()
     try {
       await execa('npm', ['install', '--save-dev', 'vuepress'])
     } catch (err) {
@@ -175,7 +181,6 @@ const generateAPIDoc = async (filePath, { install, outputPath }) => {
         .forEach(key => {
           try {
             idx++
-            console.log(textualKeys.includes(key) + key)
             apiDoc[idx] = textualKeys.includes(key)
               ? utils.formatKey(key, request[key])
               : utils[key](key, request[key]) // Invoke the corresponding helper
@@ -198,12 +203,10 @@ const generateAPIDoc = async (filePath, { install, outputPath }) => {
 
   writeFileSync(readmePath, apiDoc.join('\n'))
 
-  if (!install) {
-    logInfo('\n All set. Your doc is ready')
-    return
-  }
-
-  logInfo('\n All set. Please run npm run docs:dev')
+  const successMsg = skipInstall
+    ? ` Successfully generated README.md in ${docsDirPath}`
+    : ' All set. Please run npm run docs:dev'
+  logSuccess(successMsg)
 }
 
 module.exports = generateAPIDoc
