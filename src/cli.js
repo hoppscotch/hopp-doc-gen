@@ -20,6 +20,7 @@ program
     'skip installation of vuepress and just create the markdown file'
   )
   .option('-o, --output-path <path>', 'specify an output path', 'docs')
+  .option('-r, --request-buttons', 'add a request button for each GET request')
   .action(generateAPIDoc)
 
 program.parse(process.argv)

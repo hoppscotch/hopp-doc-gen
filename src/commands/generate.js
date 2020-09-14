@@ -4,7 +4,8 @@ const {
   mkdirSync,
   readFileSync,
   writeFileSync,
-  rmdirSync
+  rmdirSync,
+  copyFileSync
 } = require('fs')
 const ora = require('ora')
 const { prompt } = require('enquirer')
@@ -21,7 +22,7 @@ const generateAPIDoc = async (filePath, opts) => {
   await showBanner()
 
   // optional flags for generate command
-  const { skipInstall, outputPath } = opts
+  const { skipInstall, outputPath, requestButtons } = opts
 
   const absFilePath = resolve(filePath)
 
@@ -72,6 +73,25 @@ const generateAPIDoc = async (filePath, opts) => {
   }
 
   mkdirSync(docsDirPath)
+
+  if (requestButtons) {
+    // create a global component at /vuepress/components/HoppRequest.vue from src/utils/components/HoppRequest.vue
+    const vuepressConfigDirPath = resolve(`${outputPath}/.vuepress`)
+    const vuepressComponentsDirPath = resolve(
+      `${outputPath}/.vuepress/components`
+    )
+
+    try {
+      mkdirSync(vuepressConfigDirPath)
+      mkdirSync(vuepressComponentsDirPath)
+      copyFileSync(
+        `${__dirname}/../utils/components/HoppRequest.vue`,
+        `${vuepressComponentsDirPath}/HoppRequest.vue`
+      )
+    } catch (e) {
+      throw e
+    }
+  }
 
   const readmePath = resolve(outputPath, 'README.md')
   writeFileSync(readmePath, '# API Documentation')
@@ -140,6 +160,15 @@ const generateAPIDoc = async (filePath, opts) => {
      * @returns {String}
      */
     formatKey: (key, content) => ` - ${key}: ${content}`,
+    /**
+     * Format text content for request buttons
+     * @param {Object} request The hoppscotch-collection.json Object
+     * @returns {String}
+     */
+    requestButton: request => {
+      const { url, path } = request
+      return `<HoppRequest url="${url}" path="${path}" />`
+    },
     auth: (key, content) =>
       content === 'None' ? '' : utils.formatKey(key, content),
     headers: (key, content) => utils.prettifyJSONWithCheck(key, content),
@@ -190,6 +219,12 @@ const generateAPIDoc = async (filePath, opts) => {
             )
           }
         })
+
+      // invoke HoppRequest component
+      if (requestButtons && request.method === 'GET') {
+        apiDoc[idx] = utils.requestButton(request)
+        return
+      }
       idx++
       apiDoc[idx] = '---'
     })
