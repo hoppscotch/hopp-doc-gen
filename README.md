@@ -85,7 +85,7 @@ $ git commit -m "generated docs!!!"
 $ git push -u origin master
 ```
 
-**12.** Once you're logged in at https://netlify.com, create a new site by clicking on `New Site from Git`. Choose your Git provider and then choose your awesome repo where the awesome documentation is located.
+**12.** Once you're logged in at https://netlify.com, create a new site by clicking on `New Site from Git`. Choose your Git provider and then choose your awesome repo where the awesome documentation is located!
 
 **13.** Under the **Basic Build Settings**, set build command as `npm run docs:build` and set the publish directory as `docs/.vuepress/dist`. 
 
