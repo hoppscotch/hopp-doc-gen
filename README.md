@@ -29,7 +29,7 @@
 
 Hopp Doc Gen generates documentation (using Vuepress) based on Hoppscotch collections. 
 
-1. Navigate to https://hoppscotch.io/doc and import a collection you have previously created in Hoppscotch (by clicking on the folder icon next to any collection in the Collections pane.
+1. Navigate to https://hoppscotch.io/doc and import a collection you have previously created in Hoppscotch (by clicking on the folder icon next to any collection in the Collections pane).
 
 2. Once you've imported the collection, you'll see some JSON data about the collection, make sure to select all of it and copy it to your clipboard - we're going to be needing it! :wink:
 
