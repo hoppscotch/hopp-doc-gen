@@ -27,7 +27,7 @@
 
 ## Detailed Instructions
 
-*Hopp Doc Gen generates documentation (using Vuepress) based on Hoppscotch collections. *
+*Hopp Doc Gen generates documentation (using Vuepress) based on Hoppscotch collections.*
 
 **1.** Navigate to https://hoppscotch.io/doc and import a collection you have previously created in Hoppscotch (by clicking on the folder icon next to any collection in the Collections pane).
 
@@ -89,7 +89,7 @@ $ git push -u origin master
 
 **13.** Under the **Basic Build Settings**, set build command as `npm run docs:build` and set the publish directory as `docs/.vuepress/dist`. 
 
-**14.** And then click on **Deploy Site**! And *hopefully*, Netlify should build your documentation and make it live! :party:
+**14.** And then click on **Deploy Site**! And *hopefully*, Netlify should build your documentation and make it live! :partying_face:
 
 **15.** Congratulations, you have successfully deployed your documentation on Netlify!
 
