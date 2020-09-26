@@ -15,11 +15,12 @@ program
 program
   .command('generate <path>')
   .description('Generate API Documentation')
+  .option(
+    '-s, --skip-install',
+    'skip installation of vuepress and just create the markdown file'
+  )
+  .option('-o, --output-path <path>', 'specify an output path', 'docs')
+  .option('-r, --request-buttons', 'add a request button for each GET request')
   .action(generateAPIDoc)
 
 program.parse(process.argv)
-
-if (program.rawArgs.length < 3) {
-  program.outputHelp()
-  process.exit(1)
-}

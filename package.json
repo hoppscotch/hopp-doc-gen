@@ -5,8 +5,8 @@
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
-    "lint": "prettier-standard index.js test/index.js src/{*,/**/*}.js",
-    "lint:check": "prettier-standard index.js test/index.js src/{*,/**/*}.js --check",
+    "lint": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js",
+    "lint:check": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js --check",
     "pretest": "npm run lint:check",
     "test": "ava"
   },
@@ -30,6 +30,7 @@
   "author": "James George <jamesgeorge998001@gmail.com>",
   "dependencies": {
     "commander": "^6.1.0",
+    "enquirer": "^2.3.6",
     "execa": "^4.0.3",
     "kleur": "^3.0.3",
     "node-banner": "^1.4.0",

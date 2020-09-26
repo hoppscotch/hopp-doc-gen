@@ -1,18 +1,34 @@
 const execa = require('execa')
-const { existsSync, mkdirSync, readFileSync, writeFileSync } = require('fs')
+const {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  rmdirSync,
+  copyFileSync
+} = require('fs')
 const ora = require('ora')
-const { resolve } = require('path')
+const { prompt } = require('enquirer')
+const { basename, resolve } = require('path')
 
-const { logError, logInfo, showBanner } = require('../utils/helpers')
+const {
+  logError,
+  logInfo,
+  logSuccess,
+  showBanner
+} = require('../utils/helpers')
 
-const generateAPIDoc = async filePath => {
+const generateAPIDoc = async (filePath, opts) => {
   await showBanner()
+
+  // optional flags for generate command
+  const { skipInstall, outputPath, requestButtons } = opts
 
   const absFilePath = resolve(filePath)
 
   if (!existsSync(absFilePath)) {
     logError(
-      ` Make sure that hoppscotch-collection.json exist in ${process.cwd()}`
+      `\n Make sure that hoppscotch-collection.json exist in ${process.cwd()}`
     )
   }
 
@@ -23,31 +39,61 @@ const generateAPIDoc = async filePath => {
   }
 
   const pkg = require(pkgJsonPath)
+  const docsDirPath = resolve(outputPath)
 
-  const docsDirPath = resolve('docs')
   if (existsSync(docsDirPath)) {
-    logError(` docs directory already exist in ${process.cwd()}`)
+    const { overwriteDocs } = await prompt({
+      name: 'overwriteDocs',
+      type: 'confirm',
+      message: ` A ${basename(
+        docsDirPath
+      )} directory already exist in ${process.cwd()}, would you like to overwrite it?`
+    })
+    overwriteDocs
+      ? rmdirSync(docsDirPath, { recursive: true })
+      : logInfo(' Run hdg generate --help to see the available options.')
   }
 
   const data = JSON.parse(readFileSync(absFilePath))
 
-  const spinner = ora('Installing dependencies').start()
-  try {
-    await execa('npm', ['install', '--save-dev', 'vuepress'])
-  } catch (err) {
-    spinner.fail('something went wrong')
-    throw err
+  if (!skipInstall) {
+    const spinner = ora('Installing vuepress').start()
+    try {
+      await execa('npm', ['install', '--save-dev', 'vuepress'])
+    } catch (err) {
+      spinner.fail('something went wrong')
+      throw err
+    }
+    spinner.stop()
+
+    pkg.scripts['docs:build'] = 'vuepress build docs'
+    pkg.scripts['docs:dev'] = 'vuepress dev docs'
+
+    writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, 2))
   }
-  spinner.stop()
-
-  pkg.scripts['docs:build'] = 'vuepress build docs'
-  pkg.scripts['docs:dev'] = 'vuepress dev docs'
-
-  writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, 2))
 
   mkdirSync(docsDirPath)
 
-  const readmePath = resolve('docs', 'README.md')
+  if (requestButtons) {
+    // create a global component at /vuepress/components/HoppRequest.vue from src/utils/components/HoppRequest.vue
+    const vuepressConfigDirPath = resolve(`${outputPath}/.vuepress`)
+    const vuepressComponentsDirPath = resolve(
+      `${outputPath}/.vuepress/components`
+    )
+
+    try {
+      mkdirSync(vuepressConfigDirPath)
+      mkdirSync(vuepressComponentsDirPath)
+      copyFileSync(
+        `${__dirname}/../utils/components/HoppRequest.vue`,
+        `${vuepressComponentsDirPath}/HoppRequest.vue`
+      )
+    } catch (e) {
+      throw e
+    }
+  }
+
+  const readmePath = resolve(outputPath, 'README.md')
   writeFileSync(readmePath, '# API Documentation')
 
   const apiDoc = readFileSync(readmePath)
@@ -114,6 +160,15 @@ const generateAPIDoc = async filePath => {
      * @returns {String}
      */
     formatKey: (key, content) => ` - ${key}: ${content}`,
+    /**
+     * Format text content for request buttons
+     * @param {Object} request The hoppscotch-collection.json Object
+     * @returns {String}
+     */
+    requestButton: request => {
+      const { url, path } = request
+      return `<HoppRequest url="${url}" path="${path}" />`
+    },
     auth: (key, content) =>
       content === 'None' ? '' : utils.formatKey(key, content),
     headers: (key, content) => utils.prettifyJSONWithCheck(key, content),
@@ -155,7 +210,6 @@ const generateAPIDoc = async filePath => {
         .forEach(key => {
           try {
             idx++
-            console.log(textualKeys.includes(key) + key)
             apiDoc[idx] = textualKeys.includes(key)
               ? utils.formatKey(key, request[key])
               : utils[key](key, request[key]) // Invoke the corresponding helper
@@ -165,6 +219,12 @@ const generateAPIDoc = async filePath => {
             )
           }
         })
+
+      // invoke HoppRequest component
+      if (requestButtons && request.method === 'GET') {
+        apiDoc[idx] = utils.requestButton(request)
+        return
+      }
       idx++
       apiDoc[idx] = '---'
     })
@@ -178,7 +238,10 @@ const generateAPIDoc = async filePath => {
 
   writeFileSync(readmePath, apiDoc.join('\n'))
 
-  logInfo('\n All set. Please run npm run docs:dev')
+  const successMsg = skipInstall
+    ? ` Successfully generated README.md in ${docsDirPath}`
+    : ' All set. Please run npm run docs:dev'
+  logSuccess(successMsg)
 }
 
 module.exports = generateAPIDoc
