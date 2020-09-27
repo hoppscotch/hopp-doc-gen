@@ -35,8 +35,30 @@
         "preRequestScript": "pw.env.set('variable', 'value');",
         "testScript": "pw.expect('variable').toBe('value');",
         "label": "",
-        "name": "My Request",
+        "name": "My post request",
         "collection": 0
+      },
+      {
+        "url": "https://httpbin.org",
+        "path": "/get",
+        "method": "GET",
+        "auth": "None",
+        "httpUser": "",
+        "httpPassword": "",
+        "passwordFieldType": "password",
+        "bearerToken": "",
+        "headers": [],
+        "params": [],
+        "bodyParams": [],
+        "rawParams": "",
+        "rawInput": true,
+        "contentType": "",
+        "requestType": "",
+        "preRequestScript": "// pw.env.set('variable', 'value');",
+        "testScript": "// pw.expect('variable').toBe('value');",
+        "label": "",
+        "name": "My get request",
+        "collection": 1
       }
     ]
   }
