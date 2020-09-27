@@ -1,4 +1,3 @@
-const execa = require('execa')
 const fs = require('fs')
 const path = require('path')
 const test = require('ava')
@@ -17,6 +16,7 @@ const genPath = path.join(__dirname, 'generate-cmd')
 const defaultTestPath = path.join(genPath, 'default')
 const outputTestPath = path.join(genPath, 'output-path-flag')
 const skipInstallTestPath = path.join(genPath, 'skip-install-flag')
+const requestButtonsPath = path.join(genPath, 'request-button-flag')
 
 test.before('create temp directory', () => {
   fs.mkdirSync(genPath)
@@ -112,4 +112,29 @@ test('skips vuepress installation if --skip-install flag was supplied', t => {
 
   // vuepress isn't installed
   t.false(fs.existsSync(path.join(docsDirPath, 'node_modules')))
+})
+
+test('check if request buttons was created if --request-buttons flag was supplied', t => {
+  fs.mkdirSync(requestButtonsPath)
+
+  run(['generate', configFilePath, , '--request-buttons', '--skip-install'], {
+    cwd: requestButtonsPath
+  })
+
+  const readmeContent = fs.readFileSync(
+    path.join(requestButtonsPath, 'docs/README.md')
+  )
+
+  // snapshot assertion
+  t.snapshot(readmeContent)
+
+  // vue component exists in the vuepress components path
+  t.true(
+    fs.existsSync(
+      path.join(
+        requestButtonsPath,
+        '/docs/.vuepress/components/HoppRequest.vue'
+      )
+    )
+  )
 })
