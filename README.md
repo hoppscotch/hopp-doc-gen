@@ -25,7 +25,7 @@
 
 `path` - path to `hoppscotch-collection.json` exported from [hoppscotch.io](https://hoppscotch.io/)
 
-## Detailed Instructions
+## Instructions
 
 *Hopp Doc Gen generates documentation (using Vuepress) based on Hoppscotch collections.*
 
