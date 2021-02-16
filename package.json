@@ -29,7 +29,7 @@
   ],
   "author": "James George <jamesgeorge998001@gmail.com>",
   "dependencies": {
-    "commander": "^6.1.0",
+    "commander": "^7.1.0",
     "enquirer": "^2.3.6",
     "execa": "^4.0.3",
     "kleur": "^3.0.3",
