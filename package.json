@@ -40,7 +40,7 @@
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
     "ava": "^2.4.0",
-    "husky": "^3.1.0",
+    "husky": "^5.1.2",
     "lint-staged": "^9.5.0",
     "prettier-standard": "^16.4.1"
   }
