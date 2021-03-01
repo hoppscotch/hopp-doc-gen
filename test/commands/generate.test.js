@@ -19,6 +19,9 @@ const skipInstallTestPath = path.join(genPath, 'skip-install-flag')
 const requestButtonsTestPath = path.join(genPath, 'request-buttons-flag')
 
 test.before('create temp directory', () => {
+  if (fs.existsSync(genPath)) {
+    fs.rmdirSync(genPath, { recursive: true })
+  }
   fs.mkdirSync(genPath)
 })
 
