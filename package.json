@@ -8,19 +8,11 @@
     "lint": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js",
     "lint:check": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js --check",
     "pretest": "npm run lint:check",
+    "prepare": "husky install",
     "test": "ava"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
   "lint-staged": {
-    "*.js": [
-      "npm run lint",
-      "git add"
-    ]
+    "*.js": "prettier-standard"
   },
   "keywords": [
     "cli",
@@ -41,7 +33,7 @@
     "@commitlint/config-conventional": "^8.3.4",
     "ava": "^2.4.0",
     "husky": "^5.1.3",
-    "lint-staged": "^9.5.0",
+    "lint-staged": "^10.5.4",
     "prettier-standard": "^16.4.1"
   }
 }
