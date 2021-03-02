@@ -1,1 +1,4 @@
 node_modules
+
+# Test Artifacts
+test/commands/generate-cmd
