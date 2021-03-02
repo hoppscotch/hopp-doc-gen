@@ -65,7 +65,7 @@ test('shows an appropriate warning if the docs directory already exist', t => {
   const { stdout } = run(['generate', configFilePath], {
     cwd: defaultTestPath
   })
-  t.true(stdout.includes('A docs directory already exist'))
+  t.true(stdout.includes('A non-empty docs directory already exist'))
 })
 
 test('generates API Doc in the specified output path', t => {
@@ -140,4 +140,11 @@ test('creates request buttons on supplying the --request-buttons flag', t => {
       )
     )
   )
+})
+
+test('shows an appropriate warning if the current directory is not empty', t => {
+  const { stdout } = run(['generate', configFilePath, '--output-path', '.'], {
+    cwd: path.join(defaultTestPath, 'docs')
+  })
+  t.true(stdout.includes('The current directory is not empty'))
 })
