@@ -11,6 +11,12 @@
     "prepare": "husky install",
     "test": "ava"
   },
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ],
+    "timeout": "5m"
+  },
   "lint-staged": {
     "*.js": "prettier-standard"
   },
@@ -20,6 +26,11 @@
     "javascript"
   ],
   "author": "James George <jamesgeorge998001@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/hoppscotch/hopp-doc-gen/issues"
+  },
+  "homepage": "https://github.com/hoppscotch/hopp-doc-gen#readme",
+  "license": "MIT",
   "dependencies": {
     "commander": "^7.1.0",
     "enquirer": "^2.3.6",
@@ -31,7 +42,7 @@
   "devDependencies": {
     "@commitlint/cli": "^12.0.1",
     "@commitlint/config-conventional": "^8.3.4",
-    "ava": "^2.4.0",
+    "ava": "^3.15.0",
     "husky": "^5.1.3",
     "lint-staged": "^10.5.4",
     "prettier-standard": "^16.4.1"
