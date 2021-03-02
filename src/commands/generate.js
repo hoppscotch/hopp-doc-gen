@@ -1,22 +1,12 @@
+const enquirer = require('enquirer')
 const execa = require('execa')
-const {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-  rmdirSync,
-  copyFileSync
-} = require('fs')
+const fs = require('fs')
 const ora = require('ora')
-const { prompt } = require('enquirer')
-const { basename, resolve } = require('path')
+const path = require('path')
 
-const {
-  logError,
-  logInfo,
-  logSuccess,
-  showBanner
-} = require('../utils/helpers')
+const logger = require('../utils/logger')
+const renderUtils = require('../utils/helpers')
+const showBanner = require('../utils/banner')
 
 const generateAPIDoc = async (filePath, opts) => {
   await showBanner()
@@ -24,37 +14,41 @@ const generateAPIDoc = async (filePath, opts) => {
   // optional flags for generate command
   const { skipInstall, outputPath, requestButtons } = opts
 
-  const absFilePath = resolve(filePath)
-
-  if (!existsSync(absFilePath)) {
-    logError(
+  if (!fs.existsSync(filePath)) {
+    logger.error(
       `\n Make sure that hoppscotch-collection.json exist in ${process.cwd()}`
     )
+    process.exit(1)
   }
 
-  const pkgJsonPath = resolve('package.json')
-  if (!existsSync(pkgJsonPath)) {
+  const pkgJsonPath = path.resolve('package.json')
+  if (!fs.existsSync(pkgJsonPath)) {
     // Create package.json if it doesn't exist
     execa.sync('npm', ['init', '-y'])
   }
 
-  const pkg = require(pkgJsonPath)
-  const docsDirPath = resolve(outputPath)
+  const pkgJson = require(pkgJsonPath)
 
-  if (existsSync(docsDirPath)) {
-    const { overwriteDocs } = await prompt({
-      name: 'overwriteDocs',
+  if (fs.existsSync(outputPath)) {
+    const { overwritePath } = await enquirer.prompt({
+      name: 'overwritePath',
       type: 'confirm',
-      message: ` A ${basename(
-        docsDirPath
+      message: ` A ${path.basename(
+        outputPath
       )} directory already exist in ${process.cwd()}, would you like to overwrite it?`
     })
-    overwriteDocs
-      ? rmdirSync(docsDirPath, { recursive: true })
-      : logInfo(' Run hdg generate --help to see the available options.')
+
+    // Exit if the user doesn't wish to overwrite
+    if (!overwritePath) {
+      logger.info(' Run hdg generate --help to see the available options.')
+      process.exit(1)
+    }
+
+    // Delete the directory
+    fs.rmdirSync(outputPath, { recursive: true })
   }
 
-  const data = JSON.parse(readFileSync(absFilePath))
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
   if (!skipInstall) {
     const spinner = ora('Installing vuepress').start()
@@ -66,117 +60,49 @@ const generateAPIDoc = async (filePath, opts) => {
     }
     spinner.stop()
 
-    pkg.scripts['docs:build'] = 'vuepress build docs'
-    pkg.scripts['docs:dev'] = 'vuepress dev docs'
+    pkgJson.scripts['docs:build'] = 'vuepress build docs'
+    pkgJson.scripts['docs:dev'] = 'vuepress dev docs'
 
-    writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, 2))
+    fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2))
   }
 
-  mkdirSync(docsDirPath)
+  fs.mkdirSync(outputPath)
 
   if (requestButtons) {
-    // create a global component at /vuepress/components/HoppRequest.vue from src/utils/components/HoppRequest.vue
-    const vuepressConfigDirPath = resolve(`${outputPath}/.vuepress`)
-    const vuepressComponentsDirPath = resolve(
-      `${outputPath}/.vuepress/components`
+    // Create a global component at .vuepress/components/HoppRequest.vue from src/templates/components/HoppRequest.vue
+    const vuepressComponentsDirPath = path.join(
+      outputPath,
+      '.vuepress',
+      'components'
     )
 
     try {
-      mkdirSync(vuepressConfigDirPath)
-      mkdirSync(vuepressComponentsDirPath)
-      copyFileSync(
-        `${__dirname}/../utils/components/HoppRequest.vue`,
-        `${vuepressComponentsDirPath}/HoppRequest.vue`
+      fs.mkdirSync(vuepressComponentsDirPath, { recursive: true })
+      fs.copyFileSync(
+        path.join(
+          __dirname,
+          '..',
+          'templates',
+          'components',
+          'HoppRequest.vue'
+        ),
+        path.join(vuepressComponentsDirPath, 'HoppRequest.vue')
       )
     } catch (e) {
-      throw e
+      logger.error(e)
+      process.exit(1)
     }
   }
 
-  const readmePath = resolve(outputPath, 'README.md')
-  writeFileSync(readmePath, '# API Documentation')
+  const readmePath = path.join(outputPath, 'README.md')
+  fs.writeFileSync(readmePath, '# API Documentation')
 
-  const apiDoc = readFileSync(readmePath)
+  const apiDoc = fs
+    .readFileSync(readmePath)
     .toString()
     .split('\n')
 
-  let idx = 1
-
-  /**
-   * Helper methods to apply proper syntax highlighting
-   */
-  const utils = {
-    /**
-     * Check if an entry is empty
-     * @param {Object} content The respective content
-     * @return {Boolean}
-     */
-    isEmpty: content =>
-      content.length === 0 || Object.keys(content).length === 0,
-    /**
-     * Adds syntax highlighting to JSON codeblock
-     * @param {String} key The hoppscotch-collection.json key
-     * @param {String} content The codeblock
-     * @returns {String}
-     */
-    prettifyJSON: (key, content) => {
-      return (
-        ` - ${key}:` +
-        '\n```json\n' +
-        JSON.stringify(content, null, 2) +
-        '\n```'
-      )
-    },
-    /**
-     * Adds syntax highlighting to JS codeblock
-     * @param {String} key The hoppscotch-collection.json key
-     * @param {String} content The codeblock
-     * @returns {String}
-     */
-    prettifyJs: (key, content) =>
-      ` - ${key}:` + '\n```javascript\n' + content + '\n```',
-    /**
-     * Adds syntax highlighting to JSON codeblock
-     * @param {String} key The hoppscotch-collection.json key
-     * @param {String} content The codeblock
-     * @returns {String}
-     */
-    prettifyJSONWithCheck: (key, content) =>
-      utils.isEmpty(content) ? '' : utils.prettifyJSON(key, content),
-    /**
-     * Adds syntax highlighting to raw-params
-     * @param {String} key The hoppscotch-collection.json key
-     * @param {String} content The codeblock
-     * @returns {String}
-     */
-    rawParams: (key, content) => {
-      const parsed = JSON.parse(content)
-      return utils.isEmpty(parsed) ? '' : utils.prettifyJSON(key, parsed)
-    },
-    /**
-     * Format text content
-     * @param {String} key The hoppscotch-collection.json key
-     * @param {String} content The content
-     * @returns {String}
-     */
-    formatKey: (key, content) => ` - ${key}: ${content}`,
-    /**
-     * Format text content for request buttons
-     * @param {Object} request The hoppscotch-collection.json Object
-     * @returns {String}
-     */
-    requestButton: request => {
-      const { url, path } = request
-      return `<HoppRequest url="${url}" path="${path}" />`
-    },
-    auth: (key, content) =>
-      content === 'None' ? '' : utils.formatKey(key, content),
-    headers: (key, content) => utils.prettifyJSONWithCheck(key, content),
-    params: (key, content) => utils.prettifyJSONWithCheck(key, content),
-    bodyParams: (key, content) => utils.prettifyJSONWithCheck(key, content),
-    preRequestScript: (key, content) => utils.prettifyJs(key, content),
-    testScript: (key, content) => utils.prettifyJs(key, content)
-  }
+  let line = 1
 
   const validKeys = [
     'url',
@@ -196,52 +122,62 @@ const generateAPIDoc = async (filePath, opts) => {
     'testScript'
   ]
 
-  // keys with text content
+  // Keys with text content
   const textualKeys = validKeys.slice(0, 9)
 
   data.forEach(collection => {
-    idx++
-    apiDoc[idx] = `## ${collection.name}`
+    line++
+    // Render the collection Name
+    apiDoc[line] = `## ${collection.name}`
     collection.requests.forEach(request => {
-      idx++
-      apiDoc[idx] = `### ${request.name}`
+      line++
+      // Render the request name
+      apiDoc[line] = `### ${request.name}`
       Object.keys(request)
-        .filter(key => request[key] && validKeys.includes(key)) // Filter out valid keys
+        // Filter out valid keys
+        .filter(key => request[key] && validKeys.includes(key))
         .forEach(key => {
           try {
-            idx++
-            apiDoc[idx] = textualKeys.includes(key)
-              ? utils.formatKey(key, request[key])
-              : utils[key](key, request[key]) // Invoke the corresponding helper
+            line++
+            apiDoc[line] = textualKeys.includes(key)
+              ? renderUtils.formatKey(key, request[key])
+              : renderUtils[key](key, request[key]) // Invoke the corresponding helper
           } catch (err) {
-            logError(
+            logger.error(
               `\n Check key: ${key}. Make sure that hoppscotch-collection.json schema is valid`
             )
+            process.exit(1)
           }
         })
 
-      // invoke HoppRequest component
+      // Render HoppRequest component
       if (requestButtons && request.method === 'GET') {
-        apiDoc[idx] = utils.requestButton(request)
+        apiDoc[line] = renderUtils.requestButton(request)
         return
       }
-      idx++
-      apiDoc[idx] = '---'
+      line++
+      apiDoc[line] = '---'
     })
-    idx++
-    apiDoc[idx] = ''
-    idx++
-    apiDoc[idx] = '<br/>'
-    idx++
-    apiDoc[idx] = ''
+
+    // Empty line
+    line++
+    apiDoc[line] = ''
+
+    // Render line break
+    line++
+    apiDoc[line] = '<br/>'
+
+    // Empty line
+    line++
+    apiDoc[line] = ''
   })
 
-  writeFileSync(readmePath, apiDoc.join('\n'))
+  fs.writeFileSync(readmePath, apiDoc.join('\n'))
 
   const successMsg = skipInstall
-    ? ` Successfully generated README.md in ${docsDirPath}`
+    ? ` Successfully generated README.md in ${outputPath}`
     : ' All set. Please run npm run docs:dev'
-  logSuccess(successMsg)
+  logger.success(successMsg)
 }
 
 module.exports = generateAPIDoc

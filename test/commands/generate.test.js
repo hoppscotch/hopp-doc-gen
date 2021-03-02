@@ -1,4 +1,3 @@
-const execa = require('execa')
 const fs = require('fs')
 const path = require('path')
 const test = require('ava')
@@ -17,8 +16,12 @@ const genPath = path.join(__dirname, 'generate-cmd')
 const defaultTestPath = path.join(genPath, 'default')
 const outputTestPath = path.join(genPath, 'output-path-flag')
 const skipInstallTestPath = path.join(genPath, 'skip-install-flag')
+const requestButtonsTestPath = path.join(genPath, 'request-buttons-flag')
 
 test.before('create temp directory', () => {
+  if (fs.existsSync(genPath)) {
+    fs.rmdirSync(genPath, { recursive: true })
+  }
   fs.mkdirSync(genPath)
 })
 
@@ -26,7 +29,7 @@ test.after('cleanup', () => {
   fs.rmdirSync(genPath, { recursive: true })
 })
 
-test('shows an appropriate warning if an invalid config file path is provided', t => {
+test('shows an appropriate warning on supplying an invalid config file path', t => {
   const { stderr } = run(
     ['generate', path.join(genPath, 'hoppscotch-collection.json')],
     { cwd: genPath, reject: false }
@@ -58,7 +61,7 @@ test('generates API Doc', t => {
   t.true(pkgJson.scripts['docs:dev'] === 'vuepress dev docs')
 })
 
-test('shows an appropriate warning if docs directory already exist in path', t => {
+test('shows an appropriate warning if the docs directory already exist', t => {
   const { stdout } = run(['generate', configFilePath], {
     cwd: defaultTestPath
   })
@@ -91,7 +94,7 @@ test('generates API Doc in the specified output path', t => {
   t.true(pkgJson.scripts['docs:dev'] === 'vuepress dev docs')
 })
 
-test('skips vuepress installation if --skip-install flag was supplied', t => {
+test('skips vuepress installation on supplying the --skip-install flag', t => {
   // Create skip-install-flag directory
   fs.mkdirSync(skipInstallTestPath)
 
@@ -112,4 +115,29 @@ test('skips vuepress installation if --skip-install flag was supplied', t => {
 
   // vuepress isn't installed
   t.false(fs.existsSync(path.join(docsDirPath, 'node_modules')))
+})
+
+test('creates request buttons on supplying the --request-buttons flag', t => {
+  fs.mkdirSync(requestButtonsTestPath)
+
+  run(['generate', configFilePath, , '--request-buttons', '--skip-install'], {
+    cwd: requestButtonsTestPath
+  })
+
+  const readmeContent = fs.readFileSync(
+    path.join(requestButtonsTestPath, 'docs/README.md')
+  )
+
+  // snapshot assertion
+  t.snapshot(readmeContent)
+
+  // vue component exists in the vuepress components path
+  t.true(
+    fs.existsSync(
+      path.join(
+        requestButtonsTestPath,
+        '/docs/.vuepress/components/HoppRequest.vue'
+      )
+    )
+  )
 })
