@@ -1,9 +1,11 @@
 {
   "name": "hdg",
-  "version": "1.0.0-beta.85",
+  "version": "1.0.0",
   "description": "An API documentation generator CLI",
   "main": "index.js",
-  "bin": "index.js",
+  "bin": {
+    "hdg": "index.js"
+  },
   "scripts": {
     "lint": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js",
     "lint:check": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js --check",
