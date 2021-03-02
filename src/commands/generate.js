@@ -21,21 +21,18 @@ const generateAPIDoc = async (filePath, opts) => {
     process.exit(1)
   }
 
-  const pkgJsonPath = path.resolve('package.json')
-  if (!fs.existsSync(pkgJsonPath)) {
-    // Create package.json if it doesn't exist
-    execa.sync('npm', ['init', '-y'])
-  }
+  const isCurrentDir = outputPath === '.'
+  const projectDir = isCurrentDir ? path.basename(process.cwd()) : outputPath
 
-  const pkgJson = require(pkgJsonPath)
+  if (fs.existsSync(outputPath) && fs.readdirSync(outputPath).length) {
+    const msg = isCurrentDir
+      ? `The current directory is not empty`
+      : ` A non-empty ${projectDir} directory already exist in ${process.cwd()}`
 
-  if (fs.existsSync(outputPath)) {
     const { overwritePath } = await enquirer.prompt({
       name: 'overwritePath',
       type: 'confirm',
-      message: ` A ${path.basename(
-        outputPath
-      )} directory already exist in ${process.cwd()}, would you like to overwrite it?`
+      message: `${msg}, would you like to overwrite it?`
     })
 
     // Exit if the user doesn't wish to overwrite
@@ -48,7 +45,12 @@ const generateAPIDoc = async (filePath, opts) => {
     fs.rmdirSync(outputPath, { recursive: true })
   }
 
-  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+  const pkgJsonPath = path.resolve('package.json')
+
+  // Create package.json if it doesn't exist
+  if (!fs.existsSync(pkgJsonPath)) {
+    execa.sync('npm', ['init', '-y'])
+  }
 
   if (!skipInstall) {
     const spinner = ora('Installing vuepress').start()
@@ -60,13 +62,17 @@ const generateAPIDoc = async (filePath, opts) => {
     }
     spinner.stop()
 
+    const pkgJson = require(pkgJsonPath)
+
     pkgJson.scripts['docs:build'] = 'vuepress build docs'
     pkgJson.scripts['docs:dev'] = 'vuepress dev docs'
 
     fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2))
   }
 
-  fs.mkdirSync(outputPath)
+  if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath)
+  }
 
   if (requestButtons) {
     // Create a global component at .vuepress/components/HoppRequest.vue from src/templates/components/HoppRequest.vue
@@ -125,6 +131,9 @@ const generateAPIDoc = async (filePath, opts) => {
   // Keys with text content
   const textualKeys = validKeys.slice(0, 9)
 
+  // Parse hoppscotch-collections.json config file
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
   data.forEach(collection => {
     line++
     // Render the collection Name
@@ -175,7 +184,7 @@ const generateAPIDoc = async (filePath, opts) => {
   fs.writeFileSync(readmePath, apiDoc.join('\n'))
 
   const successMsg = skipInstall
-    ? ` Successfully generated README.md in ${outputPath}`
+    ? ` Successfully generated README.md in ${projectDir}`
     : ' All set. Please run npm run docs:dev'
   logger.success(successMsg)
 }
