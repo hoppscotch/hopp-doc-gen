@@ -8,13 +8,8 @@
     "lint": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js",
     "lint:check": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js --check",
     "pretest": "npm run lint:check",
+    "prepare": "husky install",
     "test": "ava"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   },
   "lint-staged": {
     "*.js": [
