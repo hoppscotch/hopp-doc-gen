@@ -6,6 +6,9 @@
   "bin": {
     "hdg": "index.js"
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "lint": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js",
     "lint:check": "prettier-standard index.js test/{*,/**/*}.js src/{*,/**/*}.js --check",
