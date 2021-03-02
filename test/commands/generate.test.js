@@ -13,10 +13,6 @@ const configFilePath = path.join(
 
 // temporary directory path
 const genPath = path.join(__dirname, 'generate-cmd')
-const defaultTestPath = path.join(genPath, 'default')
-const outputTestPath = path.join(genPath, 'output-path-flag')
-const skipInstallTestPath = path.join(genPath, 'skip-install-flag')
-const requestButtonsTestPath = path.join(genPath, 'request-buttons-flag')
 
 test.before('create temp directory', () => {
   if (fs.existsSync(genPath)) {
@@ -38,14 +34,11 @@ test('shows an appropriate warning on supplying an invalid config file path', t 
 })
 
 test('generates API Doc', t => {
-  // Create default directory
-  fs.mkdirSync(defaultTestPath)
-
   // Run shell command
-  run(['generate', configFilePath], { cwd: defaultTestPath })
+  run(['generate', configFilePath], { cwd: genPath })
 
   // A docs directory is created
-  const docsDirPath = path.join(defaultTestPath, 'docs')
+  const docsDirPath = path.join(genPath, 'docs')
   t.true(fs.existsSync(docsDirPath))
 
   // README.md content
@@ -53,7 +46,7 @@ test('generates API Doc', t => {
   t.snapshot(readmeContent)
 
   // Assert for new npm run scripts
-  const pkgJsonPath = path.join(defaultTestPath, 'package.json')
+  const pkgJsonPath = path.join(genPath, 'package.json')
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath))
   t.truthy(pkgJson.scripts['docs:build'])
   t.true(pkgJson.scripts['docs:build'] === 'vuepress build docs')
@@ -63,22 +56,19 @@ test('generates API Doc', t => {
 
 test('shows an appropriate warning if the docs directory already exist', t => {
   const { stdout } = run(['generate', configFilePath], {
-    cwd: defaultTestPath
+    cwd: genPath
   })
   t.true(stdout.includes('A non-empty docs directory already exist'))
 })
 
 test('generates API Doc in the specified output path', t => {
-  // Create output-path-flag directory
-  fs.mkdirSync(outputTestPath)
-
   // Run shell command
-  run(['generate', configFilePath, '--output-path', 'api-doc'], {
-    cwd: outputTestPath
+  run(['generate', configFilePath, '--output-path', 'output-path-test'], {
+    cwd: genPath
   })
 
-  // An api-doc directory is created
-  const docsDirPath = path.join(outputTestPath, 'api-doc')
+  // An output-path-test directory is created
+  const docsDirPath = path.join(genPath, 'output-path-test')
   t.true(fs.existsSync(docsDirPath))
 
   // README.md content
@@ -86,7 +76,7 @@ test('generates API Doc in the specified output path', t => {
   t.snapshot(readmeContent)
 
   // Assert for new npm run scripts
-  const pkgJsonPath = path.join(outputTestPath, 'package.json')
+  const pkgJsonPath = path.join(docsDirPath, 'package.json')
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath))
   t.truthy(pkgJson.scripts['docs:build'])
   t.true(pkgJson.scripts['docs:build'] === 'vuepress build docs')
@@ -95,20 +85,20 @@ test('generates API Doc in the specified output path', t => {
 })
 
 test('skips vuepress installation on supplying the --skip-install flag', t => {
-  // Create skip-install-flag directory
-  fs.mkdirSync(skipInstallTestPath)
-
   // Run shell command
-  run(['generate', configFilePath, '--skip-install', '-o', 'api-doc-test'], {
-    cwd: skipInstallTestPath
-  })
+  run(
+    ['generate', configFilePath, '--skip-install', '-o', 'skip-install-test'],
+    {
+      cwd: genPath
+    }
+  )
 
-  // An api-doc-test directory is created
-  const docsDirPath = path.join(skipInstallTestPath, 'api-doc-test')
+  // A skip-install-test directory is created
+  const docsDirPath = path.join(genPath, 'skip-install-test')
   t.true(fs.existsSync(docsDirPath))
 
   // It shouldn't create new npm run scripts
-  const pkgJsonPath = path.join(skipInstallTestPath, 'package.json')
+  const pkgJsonPath = path.join(docsDirPath, 'package.json')
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath))
   t.falsy(pkgJson.scripts['docs:build'])
   t.falsy(pkgJson.scripts['docs:dev'])
@@ -118,15 +108,26 @@ test('skips vuepress installation on supplying the --skip-install flag', t => {
 })
 
 test('creates request buttons on supplying the --request-buttons flag', t => {
-  fs.mkdirSync(requestButtonsTestPath)
-
-  run(['generate', configFilePath, , '--request-buttons', '--skip-install'], {
-    cwd: requestButtonsTestPath
-  })
-
-  const readmeContent = fs.readFileSync(
-    path.join(requestButtonsTestPath, 'docs/README.md')
+  run(
+    [
+      'generate',
+      configFilePath,
+      ,
+      '--request-buttons',
+      '--skip-install',
+      '-o',
+      'request-buttons-test'
+    ],
+    {
+      cwd: genPath
+    }
   )
+
+  // A request-buttons-test directory is created
+  const docsDirPath = path.join(genPath, 'request-buttons-test')
+  t.true(fs.existsSync(docsDirPath))
+
+  const readmeContent = fs.readFileSync(path.join(docsDirPath, 'README.md'))
 
   // snapshot assertion
   t.snapshot(readmeContent)
@@ -134,17 +135,14 @@ test('creates request buttons on supplying the --request-buttons flag', t => {
   // vue component exists in the vuepress components path
   t.true(
     fs.existsSync(
-      path.join(
-        requestButtonsTestPath,
-        '/docs/.vuepress/components/HoppRequest.vue'
-      )
+      path.join(docsDirPath, '.vuepress', 'components', 'HoppRequest.vue')
     )
   )
 })
 
 test('shows an appropriate warning if the current directory is not empty', t => {
   const { stdout } = run(['generate', configFilePath, '--output-path', '.'], {
-    cwd: path.join(defaultTestPath, 'docs')
+    cwd: path.join(genPath, 'docs')
   })
   t.true(stdout.includes('The current directory is not empty'))
 })
