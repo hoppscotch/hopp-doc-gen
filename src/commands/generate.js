@@ -64,8 +64,8 @@ const generateAPIDoc = async (filePath, opts) => {
 
     const pkgJson = require(pkgJsonPath)
 
-    pkgJson.scripts['docs:build'] = 'vuepress build docs'
-    pkgJson.scripts['docs:dev'] = 'vuepress dev docs'
+    pkgJson.scripts['docs:build'] = `vuepress build ${projectDir}`
+    pkgJson.scripts['docs:dev'] = `vuepress dev ${projectDir}`
 
     fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2))
   }

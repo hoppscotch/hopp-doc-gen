@@ -91,9 +91,9 @@ test.serial('generates API Doc in the specified output path', t => {
   const pkgJsonPath = path.join(genPath, 'package.json')
   const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath))
   t.truthy(pkgJson.scripts['docs:build'])
-  t.true(pkgJson.scripts['docs:build'] === 'vuepress build docs')
+  t.true(pkgJson.scripts['docs:build'] === `vuepress build output-path-test`)
   t.truthy(pkgJson.scripts['docs:dev'])
-  t.true(pkgJson.scripts['docs:dev'] === 'vuepress dev docs')
+  t.true(pkgJson.scripts['docs:dev'] === `vuepress dev output-path-test`)
 })
 
 test.serial(
