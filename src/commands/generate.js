@@ -168,6 +168,41 @@ const generateAPIDoc = async (filePath, opts) => {
       apiDoc[line] = '---'
     })
 
+    // Iterate over sub-folders
+    collection.folders.forEach(folder => {
+      line++
+      apiDoc[line] = `### ${folder.name}`
+      folder.requests.forEach(request => {
+        line++
+        // Render the request name
+        apiDoc[line] = `#### ${request.name}`
+        Object.keys(request)
+          // Filter out valid keys
+          .filter(key => request[key] && validKeys.includes(key))
+          .forEach(key => {
+            try {
+              line++
+              apiDoc[line] = textualKeys.includes(key)
+                ? renderUtils.formatKey(key, request[key])
+                : renderUtils[key](key, request[key]) // Invoke the corresponding helper
+            } catch (err) {
+              logger.error(
+                `\n Check key: ${key}. Make sure that hoppscotch-collection.json schema is valid`
+              )
+              process.exit(1)
+            }
+          })
+
+        // Render HoppRequest component
+        if (requestButtons && request.method === 'GET') {
+          apiDoc[line] = renderUtils.requestButton(request)
+          return
+        }
+        line++
+        apiDoc[line] = '---'
+      })
+    })
+
     // Empty line
     line++
     apiDoc[line] = ''
