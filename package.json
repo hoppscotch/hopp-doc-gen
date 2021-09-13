@@ -37,7 +37,7 @@
   "homepage": "https://github.com/hoppscotch/hopp-doc-gen#readme",
   "license": "MIT",
   "dependencies": {
-    "commander": "^7.1.0",
+    "commander": "^8.2.0",
     "enquirer": "^2.3.6",
     "execa": "^5.0.0",
     "kleur": "^4.1.4",
