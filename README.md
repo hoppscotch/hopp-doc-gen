@@ -49,6 +49,9 @@ Options:
   -o, --output-path <path>  specify an output path (default: "docs")
   -r, --request-buttons     add a request button for each GET request
   -h, --help                display help for command
+  -u, --update <path>            Update de documentation markdown file
+  -n, --no-install               Skip npm install and create only the markdown file
+  -r, --request-buttons          Add a request button for each request
 ```
 
 `path` - path to `hoppscotch-collection.json` exported from [hoppscotch.io](https://hoppscotch.io/)
